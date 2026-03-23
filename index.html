@@ -10,32 +10,76 @@
   <link rel="apple-touch-icon" href="https://via.placeholder.com/180">
 
   <style>
+    /* Default Light Mode Variables */
+    :root {
+      --bg-color: #f5f5f5;
+      --container-bg: #fff;
+      --text-color: #333;
+      --input-bg: #fff;
+      --input-border: #ccc;
+      --history-bg: #eee;
+      --result-color: #2c3e50;
+      --subtext-color: #555;
+    }
+
+    /* Dark Mode Variables */
+    body.dark-mode {
+      --bg-color: #121212;
+      --container-bg: #1e1e1e;
+      --text-color: #e0e0e0;
+      --input-bg: #2c2c2c;
+      --input-border: #444;
+      --history-bg: #2c2c2c;
+      --result-color: #e0e0e0;
+      --subtext-color: #aaa;
+    }
+
     body {
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       margin: 0;
-      background-color: #f5f5f5;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       user-select: none; 
       -webkit-user-select: none;
+      transition: background-color 0.3s ease;
     }
 
     .container {
       width: 90vw;
       margin: 15px auto;
-      padding: 20px;
+      padding: 15px;
       text-align: center;
       border-radius: 10px;
-      background-color: #fff;
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: var(--container-bg);
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
       box-sizing: border-box;
+      transition: background-color 0.3s ease;
     }
 
-    input[type="number"], input[type="text"] {
+    input[type="number"], input[type="tel"], input[type="text"] {
       width: 80px;
       padding: 12px;
       border-radius: 4px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--input-border);
+      background-color: var(--input-bg);
+      color: var(--text-color);
       font-size: 18px;
       text-align: center;
+    }
+
+    /* NEW: Flex row for Stage Name and Theme Button */
+    .header-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      align-items: center;
+    }
+
+    #stage-name {
+      flex-grow: 1; /* Takes up all remaining width */
+      box-sizing: border-box;
+      text-align: center;
+      margin-bottom: 0; /* Reset margin since it's in the flex row now */
     }
 
     button {
@@ -55,12 +99,18 @@
       transform: scale(0.95);
     }
 
+    .theme-btn {
+      background-color: #555;
+      flex-shrink: 0; /* Prevents the button from being squished */
+      padding: 12px 0; /* Adjust padding to perfectly center the icon */
+    }
+
     #result {
       margin-top: 10px;
       font-size: 22px;
       font-weight: bold;
-      color: #2c3e50;
-      min-height: 50px; /* Keeps the layout from jumping */
+      color: var(--result-color);
+      min-height: 50px;
     }
 
     #status-message {
@@ -86,70 +136,90 @@
       width: 100%;
       margin-top: 10px;
     }
+    
     .green { background-color: #27ae60; }
     .red { background-color: #e74c3c; }
+
+    .history-item {
+      background-color: var(--history-bg);
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    .history-subtext {
+      color: var(--subtext-color);
+    }
   </style>
 </head>
-<body onload="liveCalculate()"> <div class="container">
+<body onload="initializeSettings()"> 
+  <div class="container">
+    
+    <div class="header-row">
+      <input type="text" id="stage-name" placeholder="Stage Name (e.g., Stage 1)">
+      <button class="theme-btn" onclick="toggleTheme()">🌗</button>
+    </div>
 
     <div class="boxHit">
       <label>A Hits:</label>
       <button onclick="adjustValue('a', -1)">-</button>
-      <input type="number" id="a" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
+      <input type="number" id="a" value="0" inputmode="numeric" onfocus="this.select()" oninput="liveCalculate()">
       <button onclick="adjustValue('a', 1)">+</button>
     </div>
     
     <div class="boxHit">
       <label>B Hits:</label>
       <button onclick="adjustValue('b', -1)">-</button>
-      <input type="number" id="b" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
+      <input type="number" id="b" value="0" inputmode="numeric" onfocus="this.select()" oninput="liveCalculate()">
       <button onclick="adjustValue('b', 1)">+</button>
     </div>
 
     <div class="boxHit">
       <label>C Hits:</label>
       <button onclick="adjustValue('c', -1)">-</button>
-      <input type="number" id="c" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
+      <input type="number" id="c" value="0" inputmode="numeric" onfocus="this.select()" oninput="liveCalculate()">
       <button onclick="adjustValue('c', 1)">+</button>
     </div>
 
     <div class="boxHit">
       <label>D Hits:</label>
       <button onclick="adjustValue('d', -1)">-</button>
-      <input type="number" id="d" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
+      <input type="number" id="d" value="0" inputmode="numeric" onfocus="this.select()" oninput="liveCalculate()">
       <button onclick="adjustValue('d', 1)">+</button>
     </div>
 
     <div class="boxHit">
       <label>M Hits:</label>
       <button onclick="adjustValue('m', -1)">-</button>
-      <input type="number" id="m" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
+      <input type="number" id="m" value="0" inputmode="numeric" onfocus="this.select()" oninput="liveCalculate()">
       <button onclick="adjustValue('m', 1)">+</button>
     </div>
 
     <div class="boxHit">
       <label>NS Hits:</label>
       <button onclick="adjustValue('ns', -1)">-</button>
-      <input type="number" id="ns" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
+      <input type="number" id="ns" value="0" inputmode="numeric" onfocus="this.select()" oninput="liveCalculate()">
       <button onclick="adjustValue('ns', 1)">+</button>
     </div>
 
-    <div style="margin-top: 20px;">
+    <div style="margin-top: 15px;">
       <label style="display: block; margin-bottom: 5px;">Time (seconds):</label>
-        <input type="text" inputmode="numeric" id="time" value="0.00" style="width: 100%; box-sizing: border-box;" oninput="formatTime(this)">
+        <input type="tel" id="time" value="0.00" style="width: 100%; box-sizing: border-box;" oninput="formatTime(this)" onfocus="this.select()">
     </div>
 
     <div id="result"></div>
     <div id="status-message"></div>
 
     <button class="btnWide green" onclick="saveScore()">Save Score</button>
-    <button class="btnWide red" onclick="resetApp()">Clear</button>
+    <button class="btnWide red" onclick="resetApp()">Clear Inputs</button>
     
     <button class="btnWide" style="background-color: #7f8c8d;" onclick="toggleHistory()">Toggle History</button>
 
     <div id="history-section" style="display: none; margin-top: 20px; text-align: left;">
       <h3>Past Stages</h3>
       <ul id="history-list" style="list-style: none; padding: 0;"></ul>
+      
+      <button class="btnWide green" onclick="exportHistory()" style="margin-bottom: 10px;">📋 Copy to Clipboard</button>
       <button class="btnWide red" onclick="clearHistory()">Clear History</button>
     </div>
 
@@ -158,32 +228,38 @@
   <script>
     let historyData = JSON.parse(localStorage.getItem('stageHistory')) || [];
 
-    // --- NEW: ATM-Style Time Formatter ---
-    function formatTime(input) {
-      // 1. Remove anything that isn't a number
-      let val = input.value.replace(/\D/g, '');
-      if (val === '') val = '0';
-      
-      // 2. Parse as an integer and divide by 100 to get the decimal
-      let num = parseInt(val, 10) / 100;
-      
-      // 3. Put the formatted number back into the box
-      input.value = num.toFixed(2);
-      
-      // 4. Update the score instantly
+    function initializeSettings() {
+      if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
       liveCalculate();
     }
 
-    // Adjust hits via buttons
-    function adjustValue(inputId, increment) {
-      let el = document.getElementById(inputId);
-      let value = parseFloat(el.value) || 0;
-      let newValue = Math.max(0, value + increment);
-      el.value = newValue;
-      liveCalculate(); // Update score instantly
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+      } else {
+        localStorage.setItem('theme', 'light');
+      }
     }
 
-    // --- NEW: Live Calculation Logic ---
+    function formatTime(input) {
+      let digits = input.value.replace(/\D/g, '');
+      let num = parseInt(digits || '0', 10) / 100;
+      input.value = num.toFixed(2);
+      liveCalculate();
+    }
+
+    function adjustValue(inputId, increment) {
+      let el = document.getElementById(inputId);
+      let value = parseInt(el.value, 10);
+      if (isNaN(value)) value = 0;
+      let newValue = Math.max(0, value + increment);
+      el.value = newValue;
+      liveCalculate(); 
+    }
+
     function liveCalculate() {
       const getValue = (id) => parseFloat(document.getElementById(id).value) || 0;
       
@@ -193,11 +269,10 @@
 
       let totalPoints = (a * 5) + (b * 5) + (c * 3) + (d * 1) - (m * 10) - (ns * 10);
 
-      // If time is 0, show points but no Hit Factor
       if (time <= 0) {
         document.getElementById("result").innerHTML = `
           Hit Factor: <span style="color: #ccc;">0.0000</span><br>
-          <span style="font-size: 16px; font-weight: normal; color: #555;">
+          <span class="history-subtext" style="font-size: 16px; font-weight: normal;">
             ${totalPoints} pts | 0.00s
           </span>
         `;
@@ -209,24 +284,25 @@
 
       document.getElementById("result").innerHTML = `
         Hit Factor: <span style="color: #27ae60;">${hitFactor}</span><br>
-        <span style="font-size: 16px; font-weight: normal; color: #555;">
+        <span class="history-subtext" style="font-size: 16px; font-weight: normal;">
           ${totalPoints} pts | ${time.toFixed(2)}s
         </span>
       `;
     }
 
-    // --- UPDATED: Save Logic ---
     function saveScore() {
       const getValue = (id) => parseFloat(document.getElementById(id).value) || 0;
       let time = getValue("time");
       let statusDiv = document.getElementById("status-message");
 
       if (time <= 0) {
-        statusDiv.style.color = "red";
-        statusDiv.textContent = "Time must be greater than 0 to save.";
+        statusDiv.style.color = "#e74c3c";
+        statusDiv.textContent = "Time must be > 0 to save.";
         setTimeout(() => statusDiv.textContent = "", 3000);
         return;
       }
+
+      let stageName = document.getElementById("stage-name").value.trim() || "Unnamed Stage";
 
       let a = getValue("a"), b = getValue("b"), c = getValue("c"), 
           d = getValue("d"), m = getValue("m"), ns = getValue("ns");
@@ -235,6 +311,7 @@
       if (hitFactor < 0) hitFactor = "0.0000";
 
       const entry = {
+        name: stageName,
         date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
         hf: hitFactor,
         points: totalPoints,
@@ -249,8 +326,7 @@
           renderHistory();
       }
 
-      // Show a success message
-      statusDiv.style.color = "green";
+      statusDiv.style.color = "#27ae60";
       statusDiv.textContent = "Score Saved to History!";
       setTimeout(() => statusDiv.textContent = "", 3000);
     }
@@ -258,9 +334,9 @@
     function renderHistory() {
       const list = document.getElementById("history-list");
       list.innerHTML = historyData.map(item => `
-        <li style="background: #eee; padding: 10px; margin-bottom: 5px; border-radius: 5px; font-size: 14px;">
-          <strong>${item.date}</strong> — HF: <span style="color: #27ae60; font-weight: bold;">${item.hf}</span><br>
-          <span style="color: #555;">${item.points} pts in ${item.time}s</span>
+        <li class="history-item">
+          <strong>${item.name}</strong> <span style="font-size: 12px; color: #888;">(${item.date})</span><br>
+          HF: <span style="color: #27ae60; font-weight: bold; font-size: 16px;">${item.hf}</span> — <span class="history-subtext">${item.points} pts in ${item.time}s</span>
         </li>
       `).join('');
     }
@@ -279,11 +355,40 @@
       }
     }
 
+    function exportHistory() {
+      let statusDiv = document.getElementById("status-message");
+
+      if (historyData.length === 0) {
+        statusDiv.style.color = "#e74c3c";
+        statusDiv.textContent = "No history to export!";
+        setTimeout(() => statusDiv.textContent = "", 3000);
+        return;
+      }
+
+      let exportText = "SRA Stage Results:\n\n";
+      historyData.forEach((item) => {
+        exportText += `*${item.name}* (${item.date})\n`;
+        exportText += `Hit Factor: ${item.hf}\n`;
+        exportText += `Score: ${item.points} pts in ${item.time}s\n\n`;
+      });
+
+      navigator.clipboard.writeText(exportText).then(() => {
+        statusDiv.style.color = "#27ae60";
+        statusDiv.textContent = "Copied to Clipboard!";
+        setTimeout(() => statusDiv.textContent = "", 3000);
+      }).catch(err => {
+        statusDiv.style.color = "#e74c3c";
+        statusDiv.textContent = "Failed to copy text.";
+        setTimeout(() => statusDiv.textContent = "", 3000);
+        console.error('Could not copy text: ', err);
+      });
+    }
+
     function resetApp() {
       ["a", "b", "c", "d", "m", "ns"].forEach(id => document.getElementById(id).value = "0");
       document.getElementById("time").value = "0.00";
       document.getElementById("status-message").textContent = "";
-      liveCalculate(); // Reset the display to 0
+      liveCalculate(); 
     }
   </script>
 
