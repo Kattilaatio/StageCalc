@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
   <title>STAGE CALC</title>
-
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Stage Calc">
-  
   <link rel="apple-touch-icon" href="https://via.placeholder.com/180">
 
   <style>
@@ -17,14 +14,13 @@
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       margin: 0;
       background-color: #f5f5f5;
-      /* Prevents text selection while tapping buttons quickly */
       user-select: none; 
       -webkit-user-select: none;
     }
 
     .container {
-      width: 90vw; /* Slightly wider for mobile screens */
-      margin: 20px auto;
+      width: 90vw;
+      margin: 15px auto;
       padding: 20px;
       text-align: center;
       border-radius: 10px;
@@ -33,26 +29,25 @@
       box-sizing: border-box;
     }
 
-    /* Improved touch targets for mobile */
-    input[type="number"] {
+    input[type="number"], input[type="text"] {
       width: 80px;
       padding: 12px;
       border-radius: 4px;
       border: 1px solid #ccc;
-      font-size: 18px; /* 16px+ prevents iOS auto-zoom on focus */
+      font-size: 18px;
       text-align: center;
     }
 
     button {
       width: 50px;
-      padding: 15px;
+      padding: 14px;
       border-radius: 6px;
       border: none;
       background-color: #3498db;
       color: white;
       font-size: 18px;
       cursor: pointer;
-      touch-action: manipulation; /* Optimizes for fast tapping */
+      touch-action: manipulation;
     }
 
     button:active {
@@ -65,19 +60,20 @@
       font-size: 22px;
       font-weight: bold;
       color: #2c3e50;
+      min-height: 50px; /* Keeps the layout from jumping */
     }
 
-    #input-error {
-      color: red;
-      margin-top: 10px;
+    #status-message {
       font-weight: bold;
+      margin-top: 10px;
+      min-height: 20px;
     }
 
     .boxHit {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     label {
@@ -86,71 +82,77 @@
       text-align: left;
     }
 
+    .appTitle {
+      font-size: 14px;
+      padding: 6px;
+      text-align: left;
+    }
+
     .btnWide {
-      width: 100%; /* Full width buttons look better on mobile */
+      width: 100%;
       margin-top: 10px;
     }
     .green { background-color: #27ae60; }
     .red { background-color: #e74c3c; }
-
   </style>
 </head>
-<body>
-
-  <div class="container">
-    <h1>STAGE CALC</h1>
+<body onload="liveCalculate()"> <div class="container">
+    <h1 class="appTitle">STAGE CALC</h1>
 
     <div class="boxHit">
       <label>A Hits:</label>
       <button onclick="adjustValue('a', -1)">-</button>
-      <input type="number" id="a" value="0" readonly>
+      <input type="number" id="a" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
       <button onclick="adjustValue('a', 1)">+</button>
     </div>
     
     <div class="boxHit">
       <label>B Hits:</label>
       <button onclick="adjustValue('b', -1)">-</button>
-      <input type="number" id="b" value="0" readonly>
+      <input type="number" id="b" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
       <button onclick="adjustValue('b', 1)">+</button>
     </div>
 
     <div class="boxHit">
-	    <label>C Hits:</label>
-    	<button onclick="adjustValue('c', -1)">-</button>
-    	<input type="number" id="c" value="0" readonly>
-    	<button onclick="adjustValue('c', 1)">+</button>
+      <label>C Hits:</label>
+      <button onclick="adjustValue('c', -1)">-</button>
+      <input type="number" id="c" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
+      <button onclick="adjustValue('c', 1)">+</button>
     </div>
 
     <div class="boxHit">
-    	<label>D Hits:</label>
-    	<button onclick="adjustValue('d', -1)">-</button>
-    	<input type="number" id="d" value="0" readonly>
-    	<button onclick="adjustValue('d', 1)">+</button>
+      <label>D Hits:</label>
+      <button onclick="adjustValue('d', -1)">-</button>
+      <input type="number" id="d" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
+      <button onclick="adjustValue('d', 1)">+</button>
     </div>
 
     <div class="boxHit">
-    	<label>M Hits:</label>
-    	<button onclick="adjustValue('m', -1)">-</button>
-    	<input type="number" id="m" value="0" readonly>
-    	<button onclick="adjustValue('m', 1)">+</button>
+      <label>M Hits:</label>
+      <button onclick="adjustValue('m', -1)">-</button>
+      <input type="number" id="m" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
+      <button onclick="adjustValue('m', 1)">+</button>
     </div>
 
     <div class="boxHit">
-    	<label>NS Hits:</label>
-    	<button onclick="adjustValue('ns', -1)">-</button>
-    	<input type="number" id="ns" value="0" readonly>
-    	<button onclick="adjustValue('ns', 1)">+</button>
+      <label>NS Hits:</label>
+      <button onclick="adjustValue('ns', -1)">-</button>
+      <input type="number" id="ns" value="0" inputmode="numeric" onfocus="if(this.value === '0') this.value = '';" onblur="if(this.value === '') this.value = '0';" oninput="liveCalculate()">
+      <button onclick="adjustValue('ns', 1)">+</button>
     </div>
 
     <div style="margin-top: 20px;">
-    	<label style="display: block; margin-bottom: 5px;">Time (seconds):</label>
-    	<input type="number" id="time" value="0" step="0.01" style="width: 100%; box-sizing: border-box;">
+      <label style="display: block; margin-bottom: 5px;">Time (seconds):</label>
+        <input type="text" inputmode="numeric" id="time" value="0.00" style="width: 100%; box-sizing: border-box;" oninput="formatTime(this)">
     </div>
 
-    <button class="btnWide green" onclick="calculateHitFactor()">Calculate</button>
-    <button class="btnWide red" onclick="resetApp()">Clear</button>
+    <div id="result"></div>
+    <div id="status-message"></div>
+
+    <button class="btnWide green" onclick="saveScore()">Save Score to History</button>
+    <button class="btnWide red" onclick="resetApp()">Clear Inputs</button>
     
-    <button class="btnWide" style="background-color: #7f8c8d;" onclick="toggleHistory()">View History</button>
+    <button class="btnWide" style="background-color: #7f8c8d;" onclick="toggleHistory()">Toggle History</button>
 
     <div id="history-section" style="display: none; margin-top: 20px; text-align: left;">
       <h3>Past Stages</h3>
@@ -158,80 +160,138 @@
       <button class="btnWide red" onclick="clearHistory()">Clear All History</button>
     </div>
 
-    <div id="result"></div>
-    <div id="input-error" style="display: none;">Syntax Error. Please check inputs.</div>
   </div>
 
   <script>
-    // Load history from phone storage on startup
-let historyData = JSON.parse(localStorage.getItem('stageHistory')) || [];
+    let historyData = JSON.parse(localStorage.getItem('stageHistory')) || [];
 
-function adjustValue(inputId, increment) {
-  let el = document.getElementById(inputId);
-  let value = parseFloat(el.value) || 0;
-  let newValue = Math.max(0, value + increment);
-  el.value = newValue;
-}
+    // --- NEW: ATM-Style Time Formatter ---
+    function formatTime(input) {
+      // 1. Remove anything that isn't a number
+      let val = input.value.replace(/\D/g, '');
+      if (val === '') val = '0';
+      
+      // 2. Parse as an integer and divide by 100 to get the decimal
+      let num = parseInt(val, 10) / 100;
+      
+      // 3. Put the formatted number back into the box
+      input.value = num.toFixed(2);
+      
+      // 4. Update the score instantly
+      liveCalculate();
+    }
 
-function calculateHitFactor() {
-  const getValue = (id) => parseFloat(document.getElementById(id).value) || 0;
-  
-  let a = getValue("a"), b = getValue("b"), c = getValue("c"), 
-      d = getValue("d"), m = getValue("m"), ns = getValue("ns"), 
-      time = getValue("time");
+    // Adjust hits via buttons
+    function adjustValue(inputId, increment) {
+      let el = document.getElementById(inputId);
+      let value = parseFloat(el.value) || 0;
+      let newValue = Math.max(0, value + increment);
+      el.value = newValue;
+      liveCalculate(); // Update score instantly
+    }
 
-  if (time <= 0) {
-    document.getElementById("input-error").style.display = "block";
-    return;
-  }
+    // --- NEW: Live Calculation Logic ---
+    function liveCalculate() {
+      const getValue = (id) => parseFloat(document.getElementById(id).value) || 0;
+      
+      let a = getValue("a"), b = getValue("b"), c = getValue("c"), 
+          d = getValue("d"), m = getValue("m"), ns = getValue("ns"), 
+          time = getValue("time");
 
-  let totalPoints = (a * 5) + (b * 5) + (c * 3) + (d * 1) - (m * 10) - (ns * 10);
-  let hitFactor = (totalPoints / time).toFixed(4);
-  if (hitFactor < 0) hitFactor = "0.0000";
+      let totalPoints = (a * 5) + (b * 5) + (c * 3) + (d * 1) - (m * 10) - (ns * 10);
 
-  document.getElementById("result").textContent = "Hit Factor: " + hitFactor;
-  document.getElementById("input-error").style.display = "none";
+      // If time is 0, show points but no Hit Factor
+      if (time <= 0) {
+        document.getElementById("result").innerHTML = `
+          Hit Factor: <span style="color: #ccc;">0.0000</span><br>
+          <span style="font-size: 16px; font-weight: normal; color: #555;">
+            ${totalPoints} pts | 0.00s
+          </span>
+        `;
+        return;
+      }
 
-  // --- SAVE TO HISTORY ---
-  const entry = {
-    date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-    hf: hitFactor,
-    points: totalPoints
-  };
-  
-  historyData.unshift(entry); // Add to the top of the list
-  if(historyData.length > 10) historyData.pop(); // Keep only last 10 entries
-  localStorage.setItem('stageHistory', JSON.stringify(historyData));
-  renderHistory();
-}
+      let hitFactor = (totalPoints / time).toFixed(4);
+      if (hitFactor < 0) hitFactor = "0.0000";
 
-function renderHistory() {
-  const list = document.getElementById("history-list");
-  list.innerHTML = historyData.map(item => `
-    <li style="background: #eee; padding: 10px; margin-bottom: 5px; border-radius: 5px; font-size: 14px;">
-      <strong>${item.date}</strong> — HF: <span style="color: #27ae60;">${item.hf}</span> (${item.points} pts)
-    </li>
-  `).join('');
-}
+      document.getElementById("result").innerHTML = `
+        Hit Factor: <span style="color: #27ae60;">${hitFactor}</span><br>
+        <span style="font-size: 16px; font-weight: normal; color: #555;">
+          ${totalPoints} pts | ${time.toFixed(2)}s
+        </span>
+      `;
+    }
 
-function toggleHistory() {
-  const section = document.getElementById("history-section");
-  section.style.display = section.style.display === "none" ? "block" : "none";
-  renderHistory();
-}
+    // --- UPDATED: Save Logic ---
+    function saveScore() {
+      const getValue = (id) => parseFloat(document.getElementById(id).value) || 0;
+      let time = getValue("time");
+      let statusDiv = document.getElementById("status-message");
 
-function clearHistory() {
-  if(confirm("Delete all history?")) {
-    historyData = [];
-    localStorage.removeItem('stageHistory');
-    renderHistory();
-  }
-}
+      if (time <= 0) {
+        statusDiv.style.color = "red";
+        statusDiv.textContent = "Time must be greater than 0 to save.";
+        setTimeout(() => statusDiv.textContent = "", 3000);
+        return;
+      }
 
-function resetApp() {
-  ["a", "b", "c", "d", "m", "ns", "time"].forEach(id => document.getElementById(id).value = "0");
-  document.getElementById("result").textContent = "";
-}
+      let a = getValue("a"), b = getValue("b"), c = getValue("c"), 
+          d = getValue("d"), m = getValue("m"), ns = getValue("ns");
+      let totalPoints = (a * 5) + (b * 5) + (c * 3) + (d * 1) - (m * 10) - (ns * 10);
+      let hitFactor = (totalPoints / time).toFixed(4);
+      if (hitFactor < 0) hitFactor = "0.0000";
+
+      const entry = {
+        date: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        hf: hitFactor,
+        points: totalPoints,
+        time: time.toFixed(2)
+      };
+      
+      historyData.unshift(entry);
+      if(historyData.length > 10) historyData.pop();
+      localStorage.setItem('stageHistory', JSON.stringify(historyData));
+      
+      if(document.getElementById("history-section").style.display === "block") {
+          renderHistory();
+      }
+
+      // Show a success message
+      statusDiv.style.color = "green";
+      statusDiv.textContent = "Score Saved to History!";
+      setTimeout(() => statusDiv.textContent = "", 3000);
+    }
+
+    function renderHistory() {
+      const list = document.getElementById("history-list");
+      list.innerHTML = historyData.map(item => `
+        <li style="background: #eee; padding: 10px; margin-bottom: 5px; border-radius: 5px; font-size: 14px;">
+          <strong>${item.date}</strong> — HF: <span style="color: #27ae60; font-weight: bold;">${item.hf}</span><br>
+          <span style="color: #555;">${item.points} pts in ${item.time}s</span>
+        </li>
+      `).join('');
+    }
+
+    function toggleHistory() {
+      const section = document.getElementById("history-section");
+      section.style.display = section.style.display === "none" ? "block" : "none";
+      renderHistory();
+    }
+
+    function clearHistory() {
+      if(confirm("Delete all history?")) {
+        historyData = [];
+        localStorage.removeItem('stageHistory');
+        renderHistory();
+      }
+    }
+
+    function resetApp() {
+      ["a", "b", "c", "d", "m", "ns"].forEach(id => document.getElementById(id).value = "0");
+      document.getElementById("time").value = "0.00";
+      document.getElementById("status-message").textContent = "";
+      liveCalculate(); // Reset the display to 0
+    }
   </script>
 
 </body>
